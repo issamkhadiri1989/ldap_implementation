@@ -8,6 +8,6 @@ class RoleHandler
 {
     public function findRoles(): array
     {
-
+        return [];
     }
 }
