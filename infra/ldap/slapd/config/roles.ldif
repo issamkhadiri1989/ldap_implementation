@@ -1,0 +1,23 @@
+# Base organizational unit for groups
+dn: ou=groups,dc=ldaplocal,dc=com
+objectClass: organizationalUnit
+ou: groups
+
+# Role: ROLE_USER
+dn: cn=USER,ou=groups,dc=ldaplocal,dc=com
+objectClass: groupOfNames
+cn: USER
+member: cn=ikhadiri,ou=users,dc=ldaplocal,dc=com
+
+# Role: ROLE_ADMIN
+dn: cn=ADMIN,ou=groups,dc=ldaplocal,dc=com
+objectClass: groupOfNames
+cn: ADMIN
+member: cn=iboukhari,ou=users,dc=ldaplocal,dc=com
+
+# Role: ROLE_TLRH
+dn: cn=TLRH,ou=groups,dc=ldaplocal,dc=com
+objectClass: groupOfNames
+cn: TLRH
+member: cn=ikhadiri,ou=users,dc=ldaplocal,dc=com
+member: cn=iboukhari,ou=users,dc=ldaplocal,dc=com

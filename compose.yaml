@@ -1,0 +1,110 @@
+services:
+    ### START API ###
+    nginx:
+        build:
+            context: ./infra/
+            args:
+                BUILD_ARGUMENT_ENV: dev
+            dockerfile: ./nginx/Dockerfile
+        restart: always
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - .:/var/www/html:ro,cached
+            - ./infra/nginx/conf.d:/etc/nginx/conf.d
+        depends_on:
+            - symfony
+        networks:
+            - internal_network
+
+    symfony:
+        build:
+            context: ./infra/
+            dockerfile: ./php/Dockerfile
+        volumes:
+            - .:/var/www/html:cached
+            - ./infra/php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf
+            - ./infra/php/config/php.ini:/usr/local/etc/php/php.ini
+            - ./infra/php/xdebug/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+        depends_on:
+            - mysql
+        networks:
+            - internal_network
+        expose:
+            - "9000"
+            - "9003"
+
+    mysql:
+        image: mysql
+        platform: linux/x86_64
+        command: --innodb-use-native-aio=${INNODB_USE_NATIVE_AIO:-1} --sql_mode=${SQL_MODE:-"ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION"}
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: symfony
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql:/var/lib/mysql:delegated
+        networks:
+            - internal_network
+
+    myadmin:
+        image: phpmyadmin/phpmyadmin:5
+        environment:
+            PMA_HOST: mysql
+        ports:
+            - "8080:80"
+        depends_on:
+            - mysql
+        networks:
+            - internal_network
+        volumes:
+            - db_admin_data:/var/www/html
+
+    openldap:
+        image: osixia/openldap:latest
+        hostname: openldap
+        ports:
+            - "389:389"
+            - "636:636"
+        volumes:
+            - ./data/certificates:/container/service/slapd/assets/certs
+            - ./data/slapd/database:/var/lib/ldap
+            - ./data/slapd/config:/etc/ldap/slapd.d
+        networks:
+            - internal_network
+        environment:
+            - LDAP_ORGANISATION=ldaplocal
+            - LDAP_DOMAIN=ldaplocal.com
+            - LDAP_ADMIN_USERNAME=admin
+            - LDAP_ADMIN_PASSWORD=admin_pass
+            - LDAP_CONFIG_PASSWORD=config_pass
+            - LDAP_BASE_DN=dc=ldaplocal,dc=com
+            - LDAP_TLS_CRT_FILENAME=server.crt
+            - LDAP_TLS_KEY_FILENAME=server.key
+            - LDAP_TLS_CA_CRT_FILENAME=ldaplocal.com.ca.crt
+            - LDAP_READONLY_USER=true
+            - LDAP_READONLY_USER_USERNAME=user-ro
+            - LDAP_READONLY_USER_PASSWORD=ro_pass
+
+    phpldapadmin:
+        image: osixia/phpldapadmin:latest
+        hostname: 'phpldapadmin'
+        ports:
+            - "8082:80"
+        environment:
+            - PHPLDAPADMIN_LDAP_HOSTS=openldap
+            - PHPLDAPADMIN_HTTPS=false
+        depends_on:
+            - openldap
+        networks:
+            - internal_network
+
+volumes:
+    db_admin_data:
+    mysql:
+
+networks:
+    internal_network:
+        name: internal_network

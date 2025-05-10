@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello SecurityController!{% endblock %}
+
+{% block body %}
+    {% if error %}
+        {{ error.messageKey | trans(error.messageData, 'security') }}
+    {% endif %}
+
+    <form action="{{ url('app.security.login') }}" method="post">
+        <div>
+            <label for="__username">Username:</label>
+            <input type="text" name="_username" id="__username" value="{{ last_username }}" required/>
+        </div>
+        <div>
+            <label for="__password">Password:</label>
+            <input type="password" name="_password" id="__username" required/>
+        </div>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('security') }}"/>
+        <div>
+            <button type="submit">Connect</button>
+        </div>
+    </form>
+{% endblock %}

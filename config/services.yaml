@@ -1,0 +1,26 @@
+parameters:
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+
+    Symfony\Component\Ldap\Ldap:
+        arguments: [ '@Symfony\Component\Ldap\Adapter\ExtLdap\Adapter' ]
+        tags:
+            - ldap
+
+    Symfony\Component\Ldap\Adapter\ExtLdap\Adapter:
+        arguments:
+            -   host: '%env(LDAP_HOST)%'
+                port: '%env(LDAP_PORT)%'
+                options:
+                    protocol_version: 3
+                    referrals: false

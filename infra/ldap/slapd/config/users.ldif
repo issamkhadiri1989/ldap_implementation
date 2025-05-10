@@ -1,0 +1,20 @@
+# Base organizational unit for users
+dn: ou=users,dc=ldaplocal,dc=com
+objectClass: organizationalUnit
+ou: users
+
+# User: Issam KHADIRI
+dn: cn=ikhadiri,ou=users,dc=ldaplocal,dc=com
+objectClass: inetOrgPerson
+cn: ikhadiri
+sn: ikhadiri
+userPassword: 123456
+mail: ikhadiri@sqli.com
+
+# User: Issam BOUKHARI
+dn: cn=iboukhari,ou=users,dc=ldaplocal,dc=com
+objectClass: inetOrgPerson
+cn: iboukhari
+sn: iboukhari
+userPassword: 123456
+mail: iboukhari@sqli.com
