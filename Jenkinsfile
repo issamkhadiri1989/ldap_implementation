@@ -1,13 +1,11 @@
 pipeline {
     agent any
-
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/issamkhadiri1989/ldap_implementation.git'
+                git branch: 'main', url: 'https://github.com/issamkhadiri1989/ldap_implementation.git'
             }
         }
-
         stage('Deploy with Ansible') {
             steps {
                 ansiblePlaybook(
