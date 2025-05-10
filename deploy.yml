@@ -1,0 +1,31 @@
+
+- hosts: serveur
+  become: yes
+  tasks:
+      - name: Mettre à jour les paquets et le système
+        apt:
+            update_cache: yes
+            upgrade: dist
+
+      - name: Installer Git
+        apt:
+            name: git
+            state: present
+
+      - name: Cloner le dépôt Git
+        git:
+            repo: 'https://github.com/issamkhadiri1989/ldap_implementation.git'
+            dest: '/opt/app'
+            version: 'main'
+
+      - name: Démarrer les conteneurs Docker
+        ansible.builtin.shell: |
+            docker compose up -d
+        args:
+            chdir: /opt/app
+
+      - name: Install the Vendors
+        ansible.builtin.shell: |
+            docker compose exec symfony sh -c "cd /var/www/html && composer install"
+        args:
+            chdir: /opt/app
