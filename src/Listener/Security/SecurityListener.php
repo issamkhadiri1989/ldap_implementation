@@ -24,7 +24,7 @@ class SecurityListener
 
         $entry = $this->fetcher->getUserEntry($user->getUserIdentifier());
 
-        $fullName = $entry->getAttribute('displayName')[0];
+        $fullName = $entry->getAttribute('displayName')[0] ?? 'anonymous';
 
         $session = $this->requestStack->getSession();
 
