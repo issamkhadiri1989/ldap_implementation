@@ -29,5 +29,6 @@ class SecurityListener
         $session = $this->requestStack->getSession();
 
         $session->set('fullName', $fullName);
+
     }
 }
