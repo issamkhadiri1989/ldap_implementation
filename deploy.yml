@@ -20,6 +20,7 @@
 
       - name: Démarrer les conteneurs Docker
         ansible.builtin.shell: |
+            docker stop $(docker ps -aq) && \
             docker compose up -d
         args:
             chdir: /opt/app
